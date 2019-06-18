@@ -19,7 +19,7 @@ const editP2 = document.querySelector("#edit-player-2")
 const page = document.querySelector("#container")
 let player1Score = 0
 let player2Score = 0
-let scoreToWin = 100000
+let scoreToWin = 0
 p1score.textContent = player1Score
 p2score.textContent = player2Score
 
@@ -44,10 +44,13 @@ function fetchDelete(id) {
 
 function getData(data) {
   data.forEach(function(game) {
+    ul = document.createElement("ul")
+    ul.setAttribute("id", "games")
+    page.appendChild(ul)
     li = document.createElement("li")
     li.setAttribute("id", game.id)
     li.textContent = `${game.player_one}: ${game.p_one_score} - ${game.player_two}: ${game.p_two_score}`
-    results.appendChild(li)
+    ul.appendChild(li)
     deleteButton(li.id)
   })
 }
@@ -78,24 +81,39 @@ function postWinner() {
   fetchPost(historyURL, body)
 }
 
+function postPlayer() {
+  const body = {
+    name: `${createPlayer}`,
+    wins: 0,
+    losses: 0
+  }
+  fetchPost(playerURL, body)
+}
+
+function createPlayer() {
+
+}
+
 function addP1Score() {
+  disablePlayerButtons();
   player1Score ++
   p1score.textContent = player1Score
   if (player1Score === parseInt(scoreToWin)) {
-    playerWin("one")
+    playerWin(`${playerOne.textContent}`)
   }
 }
 
 function addP2Score() {
+  disablePlayerButtons();
   player2Score ++
   p2score.textContent = player2Score
   if (player2Score === parseInt(scoreToWin)) {
-    playerWin("two")
+    playerWin(`${playerTwo.textContent}`)
   }
 }
 
 function playerWin(player) {
-  disableButtons()
+  disableAddButtons()
   declareWinner(player)
   postWinner()
 }
@@ -106,6 +124,18 @@ function declareWinner(player) {
   }
   winnerMessage(player);
   newGame();
+}
+
+function listGameHistory() {
+  while (page.hasChildNodes()) {
+      page.removeChild(page.firstChild);
+  }
+  fetchGet(historyURL)
+  newGame();
+}
+
+function getPlayers() {
+  fetchGet(playersURL)
 }
 
 function newGame() {
@@ -119,28 +149,37 @@ function newGame() {
 function winnerMessage(player) {
   nameWinner = document.createElement("h1")
   nameWinner.setAttribute("id", "name-winner")
-  nameWinner.textContent = `Player ${player} is the winner!`
+  nameWinner.textContent = `${player} is the winner!`
   page.appendChild(nameWinner);
 }
 
 function setWinScore(event) {
   event.preventDefault();
-  scoreToWin = winScore.value
-  totalScore = document.createElement("h2")
-  totalScore.textContent = `Points to win: ${scoreToWin}`
-  setWinScoreDiv.removeChild(winningScore)
-  setWinScoreDiv.appendChild(totalScore)
-  enableButtons()
+  if (parseInt(winScore.value) >= 1) {
+    scoreToWin = winScore.value
+    totalScore = document.createElement("h2")
+    totalScore.textContent = `Points to win: ${scoreToWin}`
+    setWinScoreDiv.removeChild(winningScore)
+    setWinScoreDiv.appendChild(totalScore)
+    enableButtons()
+  } else window.alert("Please enter a positive number")
 }
 
-function disableButtons() {
+function disableAddButtons() {
   p1add.disabled = true;
   p2add.disabled = true;
+}
+
+function disablePlayerButtons() {
+  editP1.disabled = true;
+  editP2.disabled = true;
 }
 
 function enableButtons() {
   p1add.disabled = false;
   p2add.disabled = false;
+  editP1.disabled = false;
+  editP2.disabled = false;
 }
 
 function deleteButton(id) {
@@ -157,11 +196,48 @@ function deleteEntryFromView(id) {
 }
 
 function editP1Name() {
-
+  editP1.onclick = nameEdit(playerOne)
 }
 
 function editP2Name() {
+  editP2.onclick = nameEdit(playerTwo)
+}
 
+function nameEdit(player) {
+  createPlayerForm(player)
+  playerEditForm.addEventListener("submit", function(event){
+    event.preventDefault();
+    changePlayer(player)
+    hidePlayerForm()
+  })
+}
+
+function createPlayerForm(player) {
+  playerEdit = document.createElement("div");
+  playerEdit.setAttribute("id", "player-edit");
+  playerEdit.textContent = "New Player Name:";
+  playerEditForm = document.createElement("form");
+  editFormText = document.createElement("input");
+  editFormText.setAttribute("type", "text");
+  submitEditForm = document.createElement("input");
+  submitEditForm.setAttribute("type", "submit");
+  page.appendChild(playerEdit);
+  playerEdit.appendChild(playerEditForm);
+  playerEditForm.appendChild(editFormText);
+  playerEditForm.appendChild(submitEditForm);
+  editFormText.focus();
+}
+
+function changePlayer(player) {
+  if (player === playerOne) {
+    playerOne.textContent = editFormText.value
+  } else if (player === playerTwo) {
+    playerTwo.textContent = editFormText.value
+  }
+}
+
+function hidePlayerForm() {
+  page.removeChild(playerEdit)
 }
 
 function reset() {
@@ -180,14 +256,34 @@ function catchError(error) {
   console.error(error)
 }
 
-function runApp() {
-  fetchGet(historyURL)
-  disableButtons();
-  editP1.addEventListener("click", editP1Name)
-  editP2.addEventListener("click", editP2Name)
+function gameHistoryButton() {
+  historyButton = document.createElement("button");
+  historyButton.setAttribute("id", "history-button");
+  historyButton.textContent = "Game History";
+  page.appendChild(historyButton);
+  historyButton.addEventListener("click", listGameHistory);
+}
+
+function runMain() {
+//  fetchGet(historyURL)
+  disableAddButtons();
+  disablePlayerButtons();
+  editP1.addEventListener("click", editP1Name);
+  editP2.addEventListener("click", editP2Name);
   p1add.addEventListener("click", addP1Score);
   p2add.addEventListener("click", addP2Score);
   winningScore.addEventListener("submit", setWinScore);
+  winScore.focus();
+  gameHistoryButton();
+}
+
+function runIntro() {
+
+}
+
+function runApp() {
+  runIntro()
+  runMain()
 }
 
 runApp()
