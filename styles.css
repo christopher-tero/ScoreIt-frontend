@@ -88,6 +88,18 @@ button {
   border-radius: 5px;
 }
 
-#winner {
+#name-winner {
+  font-size: 100px;
   color: green;
+  grid-row-start: 1;
+}
+
+#new-game {
+  font-size: 30px;
+  padding: 10px;
+  border-radius: 10px;
+  margin-top: 10rem;
+  grid-column-start: 2;
+  grid-column-end: 3;
+  grid-row-start: 3;
 }

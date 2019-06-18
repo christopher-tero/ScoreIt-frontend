@@ -16,6 +16,7 @@ const container = document.querySelector("#container")
 const results = document.querySelector("#results")
 const editP1 = document.querySelector("#edit-player-1")
 const editP2 = document.querySelector("#edit-player-2")
+const page = document.querySelector("#container")
 let player1Score = 0
 let player2Score = 0
 let scoreToWin = 100000
@@ -87,17 +88,39 @@ function addP1Score() {
 
 function addP2Score() {
   player2Score ++
-  if (player2Score === scoreToWin) {
+  p2score.textContent = player2Score
+  if (player2Score === parseInt(scoreToWin)) {
     playerWin("two")
   }
-  p2score.textContent = player2Score
 }
 
 function playerWin(player) {
-  winner.textContent = `Player ${player} is the winner!`
   disableButtons()
+  declareWinner(player)
   postWinner()
-  setTimeout(reset, 5000)
+}
+
+function declareWinner(player) {
+  while (page.hasChildNodes()) {
+      page.removeChild(page.firstChild);
+  }
+  winnerMessage(player);
+  newGame();
+}
+
+function newGame() {
+  newGameButton = document.createElement("button")
+  newGameButton.setAttribute("id", "new-game")
+  newGameButton.textContent = "New Game"
+  page.appendChild(newGameButton)
+  newGameButton.addEventListener("click", reset)
+}
+
+function winnerMessage(player) {
+  nameWinner = document.createElement("h1")
+  nameWinner.setAttribute("id", "name-winner")
+  nameWinner.textContent = `Player ${player} is the winner!`
+  page.appendChild(nameWinner);
 }
 
 function setWinScore(event) {
@@ -134,7 +157,7 @@ function deleteEntryFromView(id) {
 }
 
 function editP1Name() {
-  
+
 }
 
 function editP2Name() {
