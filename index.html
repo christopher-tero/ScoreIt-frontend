@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>scoreIt!</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <div id="container">
+      <h1>ScoreIt!</h1>
+      <h4>Your Simple Game-scoring App</h4>
+      <div id="winner"></div>
+      <div id="set-win-score">
+        <form id="winning-score">
+          <p>Set winning score: <input type="number" id="win-score" required></p>
+          <input type="submit">
+        </form>
+      </div>
+      <div id="scorebox">
+        <p id="player-one">Player One</p>
+        <button id="edit-player-1">Edit Name</button>
+        <p id="player-one-score"></p>
+        <button id="player-one-increment">Add Score</button>
+        <p id="player-two">Player Two</p>
+        <button id="edit-player-2">Edit Name</button>
+        <p id="player-two-score"></p>
+        <button id="player-two-increment">Add Score</button>
+      </div>
+      <ul id="results">
+
+      </ul>
+    </div>
+    <script src="main.js"></script>
+  </body>
+</html>

@@ -1,0 +1,93 @@
+li {
+  list-style: none;
+}
+
+button {
+  margin-left: 1rem;
+}
+
+#container {
+  margin-left: 10%;
+  margin-right: 10%;
+  text-align: center;
+}
+
+#scorebox {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-template-rows: 1rem 5rem 5rem;
+}
+
+#player-one {
+  grid-column-start: 2;
+  grid-row-start: 1;
+}
+
+#player-two {
+  grid-column-start: 3;
+  grid-row-start: 1;
+}
+
+#edit-player-1 {
+  grid-column-start: 2;
+  grid-row-start: 1;
+  margin: 3rem auto 0 auto;
+  width: 50%;
+  height: 1.5rem;
+  border-radius: 3px;
+}
+
+#edit-player-2 {
+  grid-column-start: 3;
+  grid-row-start: 1;
+  margin: 3rem auto 0 auto;
+  width: 50%;
+  height: 1.5rem;
+  border-radius: 3px;
+}
+
+#player-one-score {
+  grid-column-start: 2;
+  grid-row-start: 2;
+  border: 4px inset #AAA;
+  text-align: center;
+  height: 5rem;
+  font-size: 70px;
+  border-radius: 5px;
+  margin-right: 1px;
+}
+
+#player-two-score {
+  grid-column-start: 3;
+  grid-row-start: 2;
+  border: 4px inset #AAA;
+  text-align: center;
+  height: 5rem;
+  font-size: 70px;
+  border-radius: 5px;
+  margin-left: 1px;
+}
+
+#player-one-increment {
+  grid-column-start: 2;
+  grid-row-start: 4;
+  height: 4rem;
+  font-size: 30px;
+  margin: 0 auto 0 auto;
+  width: 80%;
+  border-radius: 5px;
+}
+
+#player-two-increment {
+  grid-column-start: 3;
+  grid-row-start: 4;
+  height: 4rem;
+  font-size: 30px;
+  margin: 0 auto 0 auto;
+  width: 80%;
+  border-radius: 5px;
+}
+
+#winner {
+  color: green;
+}
