@@ -1,9 +1,22 @@
+body {
+  background: url(https://images.unsplash.com/photo-1461748659110-16121c049d52?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=2550&q=80);
+  background-size: cover;
+  background-position: 0 -200px;
+  text-shadow: 1.5px 1.5px 1px #877C;
+}
+
 li {
   list-style: none;
 }
 
 button {
   margin-left: 1rem;
+  background: #EDDB;
+  box-shadow: 2px 3px 3px #877C, -2px 3px 3px #877C;
+}
+
+h2 {
+  margin-top: 3.8rem;
 }
 
 #container {
@@ -78,6 +91,7 @@ button {
   margin: 0 auto 0 auto;
   width: 80%;
   border-radius: 5px;
+  box-shadow: 2px 3px 3px #766C, -2px 3px 3px #766C;
 }
 
 #player-two-increment {
@@ -88,6 +102,7 @@ button {
   margin: 0 auto 0 auto;
   width: 80%;
   border-radius: 5px;
+  box-shadow: 2px 3px 3px #766C, -2px 3px 3px #766C;
 }
 
 #name-winner {
@@ -114,14 +129,18 @@ button {
   height: 60px;
   z-index: 100;
   border: 3px outset #AAA;
-  background-color: #EFEFEFFF;
+  background-color: #EFDDDDFA;
   border-radius: 10px;
   padding: 2rem;
-  box-shadow: 10px 10px 8px #999;
+  box-shadow: 7px 10px 8px #988C, -7px 10px 8px #988C;
 }
 
 #player-edit form {
   margin-top: 10px;
+}
+
+#player-edit form input {
+  margin: 3px;
 }
 
 #games {
@@ -136,14 +155,35 @@ button {
   left: 40%;
   width: 20%;
   bottom: 2rem;
+  box-shadow: 2px 3px 3px #544C, -2px 3px 3px #544C;
+}
+
+#player-button {
+  font-size: 30px;
+  padding: 10px;
+  border-radius: 10px;
+  position: absolute;
+  left: 40%;
+  width: 20%;
+  bottom: 6rem;
+  box-shadow: 2px 3px 3px #544C, -2px 3px 3px #544C;
 }
 
 #win-score {
   width: 50px;
   height: 25px;
   font-size: 24px;
+  background: #EEEB;
 }
 
 #winning-score {
   font-size: 24px;
+}
+
+#win-score-submit {
+  background: #EDDB;
+  width: 12%;
+  height: 1.5rem;
+  border-radius: 3px;
+  box-shadow: 2px 3px 3px #877C, -2px 3px 3px #877C;
 }

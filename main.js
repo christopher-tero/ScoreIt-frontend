@@ -13,20 +13,28 @@ const winner = document.querySelector("#winner")
 const playerOne = document.querySelector("#player-one")
 const playerTwo = document.querySelector("#player-two")
 const container = document.querySelector("#container")
-const results = document.querySelector("#results")
 const editP1 = document.querySelector("#edit-player-1")
 const editP2 = document.querySelector("#edit-player-2")
 const page = document.querySelector("#container")
+const intro = document.querySelector("#intro-screen")
 let player1Score = 0
 let player2Score = 0
 let scoreToWin = 0
+let winPlayer = ""
 p1score.textContent = player1Score
 p2score.textContent = player2Score
 
-function fetchGet(url) {
-  fetch(url)
+function fetchGetGames() {
+  fetch(historyURL)
     .then(responseToJson)
-    .then(getData)
+    .then(useHistoryData)
+    .catch(catchError)
+}
+
+function fetchGetPlayers() {
+  fetch(playerURL)
+    .then(responseToJson)
+    .then(getPlayers)
     .catch(catchError)
 }
 
@@ -37,27 +45,104 @@ function fetchPost(url, body) {
     .catch(catchError)
 }
 
-function fetchDelete(id) {
-  fetch(historyURL + "/" + id, {method: "DELETE"})
+// function fetchEdit() {
+//   function fetchPlayers() {
+//     fetch(playerURL)
+//       .then(responseToJson)
+//       .then(playerInfo)
+//       .catch(catchError)
+//   }
+//   function playerInfo(data) {
+//     let playerArray = []
+//     data.forEach(function(player) {
+//       console.log(player.name)
+//       const playerId = player.id
+//       const playerName = player.name
+//       const playerWins = player.wins
+//       const playerLosses = player.losses
+//       playerArray.forEach(function(name) {
+//         if (player.name === name) {
+//           fetchDelete(playerURL, playerId)
+//         }
+//       })
+//       playerArray.push(player.name)
+//       console.log(winPlayer)
+//
+//       if (winPlayer === player.name) {
+//         function editMethod(body) {
+//           return {
+//             method: "PUT",
+//             headers: {
+//               'Accept': 'application/json',
+//               'Content-Type': 'application/json'
+//             },
+//             body: JSON.stringify(body)
+//           }
+//         }
+//
+//         function editPlayer(playerId, playerName, playerWins, playerLosses) {
+//           const body = {
+//             id: `${id}`,
+//             name: `${player}`,
+//             wins: `${wins}`,
+//             losses: `${losses}`
+//           }
+//           fetchEdit(playerURL, id, body)
+//         }
+//
+//           fetch(url + "/" + id, editMethod(body))
+//             .then(responseToJson)
+//             .then(result)
+//             .catch(catchError)
+//       }
+//     })
+//   }
+//   fetchPlayers()
+//   playerInfo()
+// }
+
+function fetchDelete(url, id) {
+  fetch(url + "/" + id, {method: "DELETE"})
     .catch(catchError)
 }
 
-function getData(data) {
+function getData(results) {
+  useHistoryData(results)
+}
+
+function listGameHistory() {
+  while (page.hasChildNodes()) {
+    page.removeChild(page.firstChild);
+  }
+  fetchGetGames();
+  newGame();
+}
+
+function listPlayers() {
+  while (page.hasChildNodes()) {
+    page.removeChild(page.firstChild);
+  }
+  fetchGetPlayers();
+  newGame();
+}
+
+function useHistoryData(data) {
+  gameUl = document.createElement("ul")
+  gameUl.setAttribute("id", "games")
+  page.appendChild(gameUl)
   data.forEach(function(game) {
-    ul = document.createElement("ul")
-    ul.setAttribute("id", "games")
-    page.appendChild(ul)
-    li = document.createElement("li")
-    li.setAttribute("id", game.id)
-    li.textContent = `${game.player_one}: ${game.p_one_score} - ${game.player_two}: ${game.p_two_score}`
-    ul.appendChild(li)
-    deleteButton(li.id)
+    gameLi = document.createElement("li")
+    gameLi.setAttribute("id", game.id)
+    gameLi.textContent = `${game.player_one}: ${game.p_one_score} - ${game.player_two}: ${game.p_two_score}`
+    gameUl.appendChild(gameLi)
+    deleteButton(historyURL, gameLi.id)
+    gameLi.appendChild(delButton)
   })
 }
 
-function deleteEntry(id) {
+function deleteEntry(url, id) {
   deleteEntryFromView(id);
-  fetchDelete(id);
+  fetchDelete(url, id);
 }
 
 function postMethod(body) {
@@ -71,7 +156,8 @@ function postMethod(body) {
   }
 }
 
-function postWinner() {
+function postWinner(
+) {
   const body = {
     player_one: `${playerOne.textContent}`,
     player_two: `${playerTwo.textContent}`,
@@ -81,17 +167,21 @@ function postWinner() {
   fetchPost(historyURL, body)
 }
 
-function postPlayer() {
+function postPlayer(player) {
   const body = {
-    name: `${createPlayer}`,
+    name: `${player}`,
     wins: 0,
     losses: 0
   }
   fetchPost(playerURL, body)
 }
 
-function createPlayer() {
-
+function createPlayer(player) {
+  if (player !== "Player One") {
+    if (player !== "Player Two") {
+      postPlayer(player)
+    }
+  }
 }
 
 function addP1Score() {
@@ -113,9 +203,11 @@ function addP2Score() {
 }
 
 function playerWin(player) {
-  disableAddButtons()
-  declareWinner(player)
-  postWinner()
+  winPlayer = player;
+  disableAddButtons();
+  declareWinner(player);
+  postWinner();
+//  fetchEdit()
 }
 
 function declareWinner(player) {
@@ -126,16 +218,26 @@ function declareWinner(player) {
   newGame();
 }
 
-function listGameHistory() {
-  while (page.hasChildNodes()) {
-      page.removeChild(page.firstChild);
-  }
-  fetchGet(historyURL)
-  newGame();
+function getPlayers(data) {
+  playerUl = document.createElement("ul")
+  playerUl.setAttribute("id", "players")
+  page.appendChild(playerUl)
+  addPlayerToList(data)
 }
 
-function getPlayers() {
-  fetchGet(playersURL)
+function addPlayerToList(data) {
+  let allPlayers = []
+  data.forEach(function(player) {
+    if (!allPlayers.includes(player.name)) {
+      playerLi = document.createElement("li")
+      playerLi.setAttribute("id", player.id)
+      playerLi.textContent = `${player.name} - ${player.wins}W / ${player.losses}L`
+      playerUl.appendChild(playerLi)
+      deleteButton(playerURL, playerLi.id)
+      playerLi.appendChild(delButton)
+      allPlayers.push(player.name)
+    } else (fetchDelete(playerURL, player.id))
+  })
 }
 
 function newGame() {
@@ -182,11 +284,10 @@ function enableButtons() {
   editP2.disabled = false;
 }
 
-function deleteButton(id) {
+function deleteButton(url, id) {
   delButton = document.createElement("button")
   delButton.textContent = "Delete Entry"
-  li.appendChild(delButton)
-  delButton.addEventListener("click", function(){deleteEntry(id)})
+  delButton.addEventListener("click", function(){deleteEntry(url, id)})
 }
 
 function deleteEntryFromView(id) {
@@ -208,6 +309,7 @@ function nameEdit(player) {
   playerEditForm.addEventListener("submit", function(event){
     event.preventDefault();
     changePlayer(player)
+    createPlayer(player.textContent);
     hidePlayerForm()
   })
 }
@@ -229,11 +331,7 @@ function createPlayerForm(player) {
 }
 
 function changePlayer(player) {
-  if (player === playerOne) {
-    playerOne.textContent = editFormText.value
-  } else if (player === playerTwo) {
-    playerTwo.textContent = editFormText.value
-  }
+  player.textContent = editFormText.value
 }
 
 function hidePlayerForm() {
@@ -264,8 +362,15 @@ function gameHistoryButton() {
   historyButton.addEventListener("click", listGameHistory);
 }
 
+function gamePlayersButton() {
+  playerButton = document.createElement("button");
+  playerButton.setAttribute("id", "player-button");
+  playerButton.textContent = "List of Players";
+  page.appendChild(playerButton);
+  playerButton.addEventListener("click", listPlayers)
+}
+
 function runMain() {
-//  fetchGet(historyURL)
   disableAddButtons();
   disablePlayerButtons();
   editP1.addEventListener("click", editP1Name);
@@ -275,14 +380,15 @@ function runMain() {
   winningScore.addEventListener("submit", setWinScore);
   winScore.focus();
   gameHistoryButton();
+  gamePlayersButton();
 }
 
-function runIntro() {
-
-}
+// function runIntro() {
+//
+// }
 
 function runApp() {
-  runIntro()
+  // runIntro()
   runMain()
 }
 
