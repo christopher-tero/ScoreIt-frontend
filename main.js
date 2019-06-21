@@ -12,22 +12,25 @@ const setWinScoreDiv = document.querySelector("#set-win-score")
 const winner = document.querySelector("#winner")
 const playerOne = document.querySelector("#player-one")
 const playerTwo = document.querySelector("#player-two")
-const container = document.querySelector("#container")
 const editP1 = document.querySelector("#edit-player-1")
 const editP2 = document.querySelector("#edit-player-2")
 const page = document.querySelector("#container")
 const intro = document.querySelector("#intro-screen")
+const title = document.createElement("h1")
+title.setAttribute("id", "title")
+title.textContent = "ScoreIt!"
 let player1Score = 0
 let player2Score = 0
 let scoreToWin = 0
 let winPlayer = ""
+let losePlayer = ""
 p1score.textContent = player1Score
 p2score.textContent = player2Score
 
 function fetchGetGames() {
   fetch(historyURL)
     .then(responseToJson)
-    .then(useHistoryData)
+    .then(getData)
     .catch(catchError)
 }
 
@@ -38,6 +41,13 @@ function fetchGetPlayers() {
     .catch(catchError)
 }
 
+function fetchGetPlayersList() {
+  fetch(playerURL)
+    .then(responseToJson)
+    .then(listPlayers)
+    .catch(catchError)
+}
+
 function fetchPost(url, body) {
   fetch(url, postMethod(body))
     .then(responseToJson)
@@ -45,88 +55,61 @@ function fetchPost(url, body) {
     .catch(catchError)
 }
 
-// function fetchEdit() {
-//   function fetchPlayers() {
-//     fetch(playerURL)
-//       .then(responseToJson)
-//       .then(playerInfo)
-//       .catch(catchError)
-//   }
-//   function playerInfo(data) {
-//     let playerArray = []
-//     data.forEach(function(player) {
-//       console.log(player.name)
-//       const playerId = player.id
-//       const playerName = player.name
-//       const playerWins = player.wins
-//       const playerLosses = player.losses
-//       playerArray.forEach(function(name) {
-//         if (player.name === name) {
-//           fetchDelete(playerURL, playerId)
-//         }
-//       })
-//       playerArray.push(player.name)
-//       console.log(winPlayer)
-//
-//       if (winPlayer === player.name) {
-//         function editMethod(body) {
-//           return {
-//             method: "PUT",
-//             headers: {
-//               'Accept': 'application/json',
-//               'Content-Type': 'application/json'
-//             },
-//             body: JSON.stringify(body)
-//           }
-//         }
-//
-//         function editPlayer(playerId, playerName, playerWins, playerLosses) {
-//           const body = {
-//             id: `${id}`,
-//             name: `${player}`,
-//             wins: `${wins}`,
-//             losses: `${losses}`
-//           }
-//           fetchEdit(playerURL, id, body)
-//         }
-//
-//           fetch(url + "/" + id, editMethod(body))
-//             .then(responseToJson)
-//             .then(result)
-//             .catch(catchError)
-//       }
-//     })
-//   }
-//   fetchPlayers()
-//   playerInfo()
-// }
+function fetchEdit(url, id, body) {
+  fetch(url + "/" + id, editMethod(body))
+    .then(responseToJson)
+    .then(result)
+    .catch(catchError)
+}
 
 function fetchDelete(url, id) {
   fetch(url + "/" + id, {method: "DELETE"})
     .catch(catchError)
 }
 
-function getData(results) {
-  useHistoryData(results)
+function editMethod(body) {
+  return {
+    method: "PUT",
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(body)
+  }
+}
+
+function editPlayer(id, player, wins, losses) {
+  const body = {
+    id: `${id}`,
+    name: `${player}`,
+    wins: `${wins}`,
+    losses: `${losses}`
+  }
+  fetchEdit(playerURL, id, body)
 }
 
 function listGameHistory() {
   while (page.hasChildNodes()) {
     page.removeChild(page.firstChild);
   }
+  page.appendChild(title)
   fetchGetGames();
   newGame();
 }
 
-function listPlayers() {
+function listPlayersOut(data) {
   while (page.hasChildNodes()) {
     page.removeChild(page.firstChild);
   }
-  fetchGetPlayers();
+  page.appendChild(title)
+  playerUl = document.createElement("ul")
+  playerUl.setAttribute("id", "players")
+  page.appendChild(playerUl)
+  addPlayerToList(data)
   newGame();
 }
 
-function useHistoryData(data) {
+function getData(data) {
   gameUl = document.createElement("ul")
   gameUl.setAttribute("id", "games")
   page.appendChild(gameUl)
@@ -156,8 +139,7 @@ function postMethod(body) {
   }
 }
 
-function postWinner(
-) {
+function postWinner() {
   const body = {
     player_one: `${playerOne.textContent}`,
     player_two: `${playerTwo.textContent}`,
@@ -167,19 +149,19 @@ function postWinner(
   fetchPost(historyURL, body)
 }
 
-function postPlayer(player) {
+function postPlayer(player, wins, losses) {
   const body = {
     name: `${player}`,
-    wins: 0,
-    losses: 0
+    wins: `${wins}`,
+    losses: `${losses}`
   }
   fetchPost(playerURL, body)
 }
 
-function createPlayer(player) {
+function createPlayer(player, wins, losses) {
   if (player !== "Player One") {
     if (player !== "Player Two") {
-      postPlayer(player)
+      postPlayer(player, wins, losses)
     }
   }
 }
@@ -189,7 +171,7 @@ function addP1Score() {
   player1Score ++
   p1score.textContent = player1Score
   if (player1Score === parseInt(scoreToWin)) {
-    playerWin(`${playerOne.textContent}`)
+    playerWin(`${playerOne.textContent}`, `${playerTwo.textContent}`)
   }
 }
 
@@ -198,17 +180,20 @@ function addP2Score() {
   player2Score ++
   p2score.textContent = player2Score
   if (player2Score === parseInt(scoreToWin)) {
-    playerWin(`${playerTwo.textContent}`)
+    playerWin(`${playerTwo.textContent}`, `${playerOne.textContent}`)
   }
 }
 
-function playerWin(player) {
-  winPlayer = player;
+function playerWin(winner, loser) {
+  winPlayer = winner;
+  losePlayer = loser;
   disableAddButtons();
-  declareWinner(player);
+  declareWinner(winner);
+  fetchGetPlayers();
   postWinner();
-//  fetchEdit()
 }
+
+function playerLoss(player) {}
 
 function declareWinner(player) {
   while (page.hasChildNodes()) {
@@ -219,10 +204,29 @@ function declareWinner(player) {
 }
 
 function getPlayers(data) {
-  playerUl = document.createElement("ul")
-  playerUl.setAttribute("id", "players")
-  page.appendChild(playerUl)
-  addPlayerToList(data)
+  playerData(data);
+}
+
+function listPlayers(data) {
+  gamePlayersButton(data);
+}
+
+function playerData(data) {
+  data.forEach(function(player) {
+    let id = player.id
+    let name = player.name
+    let wins = parseInt(player.wins)
+    let losses = player.losses
+    console.log(winPlayer)
+    console.log(losePlayer)
+    if (winPlayer === name) {
+      wins ++
+      editPlayer(id, name, wins, losses)
+    } else if (losePlayer === name) {
+      losses ++
+      editPlayer(id, name, wins, losses)
+    }
+  })
 }
 
 function addPlayerToList(data) {
@@ -304,12 +308,17 @@ function editP2Name() {
   editP2.onclick = nameEdit(playerTwo)
 }
 
+function randomInt(max) {
+  return Math.floor(Math.random() * Math.floor(max));
+}
+
 function nameEdit(player) {
   createPlayerForm(player)
   playerEditForm.addEventListener("submit", function(event){
+    fetchGetPlayers();
     event.preventDefault();
     changePlayer(player)
-    createPlayer(player.textContent);
+    createPlayer(player.textContent, 0, 0);
     hidePlayerForm()
   })
 }
@@ -362,17 +371,22 @@ function gameHistoryButton() {
   historyButton.addEventListener("click", listGameHistory);
 }
 
-function gamePlayersButton() {
+function gamePlayersButton(data) {
   playerButton = document.createElement("button");
   playerButton.setAttribute("id", "player-button");
   playerButton.textContent = "List of Players";
   page.appendChild(playerButton);
-  playerButton.addEventListener("click", listPlayers)
+  playerButton.addEventListener("click", function(){
+    listPlayersOut(data)
+  })
 }
 
-function runMain() {
+function runSingleGame() {
+  page.style = "display:contents"
+  intro.style = "display:none"
   disableAddButtons();
   disablePlayerButtons();
+  fetchGetPlayersList();
   editP1.addEventListener("click", editP1Name);
   editP2.addEventListener("click", editP2Name);
   p1add.addEventListener("click", addP1Score);
@@ -380,16 +394,47 @@ function runMain() {
   winningScore.addEventListener("submit", setWinScore);
   winScore.focus();
   gameHistoryButton();
-  gamePlayersButton();
 }
 
-// function runIntro() {
-//
-// }
+function runTournament() {
+  intro.style = "display:none"
+  tourneyDiv = document.createElement("div")
+  tourneyDiv.setAttribute("id", "under-construction")
+  document.body.appendChild(tourneyDiv)
+  tourneyDiv.appendChild(title)
+  underConstruction = document.createElement("h1")
+  underConstruction.textContent = "This page is under construction"
+  tourneyDiv.appendChild(underConstruction)
+  backToMain = document.createElement("button")
+  backToMain.setAttribute("id", "back-to-main")
+  backToMain.textContent = "Back to Main Menu"
+  tourneyDiv.appendChild(backToMain)
+  backToMain.addEventListener("click", backToIntro)
+}
+
+function backToIntro() {
+  page.style = "display:none"
+  tourneyDiv.style = "display:none";
+  intro.style = "display:contents";
+  runIntro();
+}
+
+function runIntro() {
+  page.style = "display:none"
+  intro.append(title)
+  singleGame = document.createElement("button");
+  tournament = document.createElement("button");
+  singleGame.setAttribute("id", "single-game")
+  tournament.setAttribute("id", "tournament")
+  singleGame.textContent = "Single Game";
+  tournament.textContent = "Tournament";
+  intro.append(singleGame, tournament)
+  singleGame.addEventListener("click", runSingleGame);
+  tournament.addEventListener("click", runTournament);
+}
 
 function runApp() {
-  // runIntro()
-  runMain()
+  runIntro();
 }
 
-runApp()
+runApp();

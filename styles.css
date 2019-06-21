@@ -1,8 +1,11 @@
+@import url('https://fonts.googleapis.com/css?family=Righteous|Roboto&display=swap');
+
 body {
   background: url(https://images.unsplash.com/photo-1461748659110-16121c049d52?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=2550&q=80);
   background-size: cover;
-  background-position: 0 -200px;
+  /* background-position: 0 -200px; */
   text-shadow: 1.5px 1.5px 1px #877C;
+  font-family: 'Roboto', sans-serif;
 }
 
 li {
@@ -19,11 +22,26 @@ h2 {
   margin-top: 3.8rem;
 }
 
+#title {
+  font-family: 'Righteous', cursive;
+  font-size: 40px;
+  text-align: center;
+  color: black;
+  text-shadow: 3px 3px 2px #877C, -3px 3px 2px #877C;
+}
+
 #container {
   margin-left: 10%;
   margin-right: 10%;
   text-align: center;
 }
+
+#intro {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  text-align: center;
+}
+
 
 #scorebox {
   display: grid;
@@ -186,4 +204,30 @@ h2 {
   height: 1.5rem;
   border-radius: 3px;
   box-shadow: 2px 3px 3px #877C, -2px 3px 3px #877C;
+}
+
+#single-game {
+  position: fixed;
+  top: 30%;
+  margin-left: 33%;
+  height: 3rem;
+  width: 10rem;
+  border-radius: 8px;
+  font-size: 20px;
+}
+
+#tournament {
+  position: fixed;
+  top: 30%;
+  margin-left: 53%;
+  height: 3rem;
+  width: 10rem;
+  border-radius: 8px;
+  font-size: 20px;
+}
+
+#under-construction {
+  text-align: center;
+  font-size: 60px;
+  color: red;
 }

@@ -603,3 +603,59 @@ runApp()
 // //getData(results)
 // //getPlayers(results)
 // }
+
+// function fetchEdit() {
+//   function fetchPlayers() {
+//     fetch(playerURL)
+//       .then(responseToJson)
+//       .then(playerInfo)
+//       .catch(catchError)
+//   }
+//   function playerInfo(data) {
+//     let playerArray = []
+//     data.forEach(function(player) {
+//       console.log(player.name)
+//       const playerId = player.id
+//       const playerName = player.name
+//       const playerWins = player.wins
+//       const playerLosses = player.losses
+//       playerArray.forEach(function(name) {
+//         if (player.name === name) {
+//           fetchDelete(playerURL, playerId)
+//         }
+//       })
+//       playerArray.push(player.name)
+//       console.log(winPlayer)
+//
+//       if (winPlayer === player.name) {
+//         function editMethod(body) {
+//           return {
+//             method: "PUT",
+//             headers: {
+//               'Accept': 'application/json',
+//               'Content-Type': 'application/json'
+//             },
+//             body: JSON.stringify(body)
+//           }
+//         }
+//
+//         function editPlayer(playerId, playerName, playerWins, playerLosses) {
+//           const body = {
+//             id: `${id}`,
+//             name: `${player}`,
+//             wins: `${wins}`,
+//             losses: `${losses}`
+//           }
+//           fetchEdit(playerURL, id, body)
+//         }
+//
+//           fetch(url + "/" + id, editMethod(body))
+//             .then(responseToJson)
+//             .then(result)
+//             .catch(catchError)
+//       }
+//     })
+//   }
+//   fetchPlayers()
+//   playerInfo()
+// }
